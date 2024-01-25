@@ -1,10 +1,12 @@
 variables:
   random_state: 42
+  test_size: 0.5
   vocab_size: 30522
   ngram_range: (3, 5)
   sublinear_tf: True
   lowercase: False
   max_features: 5000
+  n_trials: 20
 
 data:
   preprocessed_train_data_path: data/interim/full_train.csv
@@ -12,10 +14,18 @@ data:
   processed_train_data_path: data/processed/train.csv
   processed_test_data_path: data/processed/test.csv
   sentpiece_train_data_path: data/interim/sentpiece_train.txt
+  modelling_X_train_data_path: data/modelling/train.npy
+  modelling_X_test_data_path: data/modelling/test.npy
+  modelling_X_validation_data_path: data/modelling/validation.npy
+  modelling_y_train_data_path: data/modelling/train.csv
+  modelling_y_test_data_path: data/modelling/test.csv
+  modelling_y_validation_data_path: data/modelling/validation.csv
 
 models:
   sentpiece_model_prefix: models/sentpiece_model
+  sentpiece_model_path: models/sentpiece_model.model
   vectorizer_path: models/tfidf_vectorizer.pkl
+  hyperparameters_path: models/hyperparameters.json
 
 mlflow:
   experiment_name: "detect-ai-text"

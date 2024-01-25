@@ -73,5 +73,7 @@ def evaluate_model(model: Union[BaseEstimator, lgb.Booster, xgb.Booster],
     except Exception as e:
         logger.error(f"Error evaluating the model: {str(e)}")
         raise Exception(f"Error evaluating the model: {str(e)}")
+    
+
 
 custom_scorer = make_scorer(custom_metric, needs_proba=True)

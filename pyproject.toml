@@ -15,6 +15,7 @@ pydantic = "^2.5.3"
 sentencepiece = "^0.1.99"
 lightgbm = "^4.2.0"
 mlflow = "^2.9.2"
+optuna = "^3.5.0"
 
 
 [build-system]

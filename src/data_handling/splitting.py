@@ -1,34 +1,34 @@
 """
 Module containing functions for splitting data into train and test sets.
 """
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from logs import logger
-from gather_data import save_data
 from src.utils import load_config
+from typing import Optional, Union, Tuple
+from scipy.sparse import csr_matrix
+import numpy as np
 
 config = load_config()
 
-def split_data(data: pd.DataFrame, test_size: float,  save_path: str) -> pd.DataFrame:
+def split_data(X_data: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]],
+               y_data: Optional[np.ndarray],
+               test_size: float) -> Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]:
     """
     Split data into train and test sets.
 
     Parameters:
-    - data (pd.DataFrame): Input data.
+    - X_data (Union[pd.DataFrame, np.ndarray, csr_matrix]): Input features.
+    - y_data (Optional[np.ndarray]): Target variable.
+    - test_size (float): Size of the test set.
 
     Returns:
-    - pd.DataFrame: Data without duplicates.
+    - Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]: Tuple containing X_train, X_test, y_train, y_test.
     """
     # Split data
-    train, test = train_test_split(data, 
-                                   test_size=test_size, 
-                                   random_state=config['variables']['random_state'])
+    X_train, X_test, y_train, y_test = train_test_split(X_data, y_data,
+                                                        test_size=test_size,
+                                                        random_state=config['variables']['random_state'])
     logger.info(f"Split data into train and test sets.")
 
-    # Save data to disk
-    save_data(train, save_path + "train.csv")
-    save_data(test, save_path + "test.csv")
-    logger.info(f"Saved data to '{save_path}'.")
-
-    return train, test
+    return X_train, X_test, y_train, y_test
