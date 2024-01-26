@@ -53,6 +53,7 @@ def data_pipeline(fit_tokenizer: bool = False, fit_vectorizer: bool = True) -> T
         logger.info('Splitting data...')
         validation, test = split_data(tokenized_test_data,
                                       test_size=config['variables']['test_size'])
+
         logger.info('Data split successfully')
         ## Vectorize
         logger.info('Vectorizing data...')
@@ -66,12 +67,13 @@ def data_pipeline(fit_tokenizer: bool = False, fit_vectorizer: bool = True) -> T
         vectorized_X_train_data = vectorize_data(vectorizer, tokenized_train_data['text_spm'])
         vectorized_X_test_data = vectorize_data(vectorizer, test['text_spm'])
         vectorized_X_validation_data = vectorize_data(vectorizer, validation['text_spm'])
-        y_train_data = tokenized_train_data[['generated']]
-        y_validation_data = validation['generated']
-        y_test_data = test['generated']
+        y_train_data = tokenized_train_data['generated'].values
+        y_validation_data = validation['generated'].values
+        y_test_data = test['generated'].values
         logger.info('Data vectorized successfully')
         
         ## Save the data
+        
         save_data(vectorized_X_train_data, config['data']['modelling_X_train_data_path'])
         save_data(vectorized_X_test_data, config['data']['modelling_X_test_data_path'])
         save_data(vectorized_X_validation_data, config['data']['modelling_X_validation_data_path'])
@@ -89,4 +91,5 @@ def data_pipeline(fit_tokenizer: bool = False, fit_vectorizer: bool = True) -> T
 
 
 if __name__ == "__main__":
-    data_pipeline()
+    data_pipeline(config['data_pipeline']['fit_tokenizer'],
+                  config['data_pipeline']['fit_vectorizer'])

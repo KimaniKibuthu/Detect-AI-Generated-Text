@@ -19,19 +19,23 @@ data:
   modelling_X_train_data_path: data/modelling/X_train.npz
   modelling_X_test_data_path: data/modelling/X_test.npz
   modelling_X_validation_data_path: data/modelling/X_validation.npz
-  modelling_y_train_data_path: data/modelling/y_train.csv
-  modelling_y_test_data_path: data/modelling/y_test.csv
-  modelling_y_validation_data_path: data/modelling/y_validation.csv
+  modelling_y_train_data_path: data/modelling/y_train.npy
+  modelling_y_test_data_path: data/modelling/y_test.npy
+  modelling_y_validation_data_path: data/modelling/y_validation.npy
 
 models:
   sentpiece_model_prefix: models/sentpiece_model
   sentpiece_model_path: models/sentpiece_model.model
   vectorizer_path: models/vectorizer.pkl
   hyperparameters_path: models/hyperparameters.json
+  model_to_use: lgbm
 
 data_pipeline:
   fit_tokenizer: False
   fit_vectorizer: True
+  
+modelling_pipeline:
+  hyperparameter_tune: False
 
 mlflow:
   experiment_name: "detect-ai-text"

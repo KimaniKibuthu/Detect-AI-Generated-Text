@@ -76,4 +76,4 @@ def evaluate_model(model: Union[BaseEstimator, lgb.Booster, xgb.Booster],
     
 
 
-custom_scorer = make_scorer(custom_metric, needs_proba=True)
+custom_scorer = make_scorer(custom_metric, response_method="predict_proba")

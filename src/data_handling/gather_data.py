@@ -61,8 +61,8 @@ def save_data(data: Union[pd.DataFrame, pd.Series, np.ndarray, csr_matrix], data
         # Check data type and save accordingly
         if isinstance(data, pd.DataFrame):
             data.to_csv(data_path, index=False)
-        elif isinstance(data, (pd.Series, np.ndarray)):
-            pd.Series(data).to_csv(data_path, index=False, header=False)
+        elif isinstance(data, np.ndarray):
+            np.save(data_path, data)
         else:
             save_npz(data_path, data)
 
