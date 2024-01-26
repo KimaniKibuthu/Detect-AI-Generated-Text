@@ -11,8 +11,7 @@ import numpy as np
 
 config = load_config()
 
-def split_data(X_data: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]],
-               y_data: Optional[np.ndarray],
+def split_data(data: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]],
                test_size: float) -> Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]:
     """
     Split data into train and test sets.
@@ -26,9 +25,9 @@ def split_data(X_data: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]],
     - Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]: Tuple containing X_train, X_test, y_train, y_test.
     """
     # Split data
-    X_train, X_test, y_train, y_test = train_test_split(X_data, y_data,
-                                                        test_size=test_size,
-                                                        random_state=config['variables']['random_state'])
+    train, test= train_test_split(data,
+                                  test_size=test_size,
+                                  random_state=config['variables']['random_state'])
     logger.info(f"Split data into train and test sets.")
 
-    return X_train, X_test, y_train, y_test
+    return train, test

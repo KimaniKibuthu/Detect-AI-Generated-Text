@@ -1,6 +1,8 @@
 from data_pipeline import data_pipeline
 from modelling_pipeline import model_pipeline, train_and_evaluate_model
+from src.utils import load_config
 from logs import logger
+
 def main():
     """
     Execute the full pipeline.
@@ -13,4 +15,5 @@ def main():
     logger.info('Full pipeline finished')
 
 if __name__ == '__main__':
+    config = load_config()
     main()

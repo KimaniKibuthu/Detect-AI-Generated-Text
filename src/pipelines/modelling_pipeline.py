@@ -1,21 +1,35 @@
-"""
-This contains the modelling pipeline
-"""
-
-import mlflow
-import optuna
 import json
+import optuna
 from data_handling.gather_data import load_data
-from models.evaluate import evaluate
-from models.hyperparameters_tuning import objective
-from models.train import train_model
+from modelling.evaluate import evaluate
+from modelling.hyperparameters_tuning import objective
+from modelling.train import train_model
 from logs import logger
+import mlflow
 from utils import load_config
 
 config = load_config()
 
 mlflow.set_experiment(config['mlflow']['experiment_name'])
 mlflow.set_tracking_uri(config['mlflow']['tracking_uri'])
+PRODUCTION_TAG = 'production'
+
+
+def get_production_model_roc():
+    """
+    Fetch and return ROC of the model currently in production.
+
+    Returns:
+    - float: ROC of the model in production or 0 if no model is in production.
+    """
+    production_runs = mlflow.search_runs(
+        experiment_ids=[mlflow.get_experiment_by_name(config['mlflow']['experiment_name']).experiment_id],
+        filter_string=f"tags.mlflow.runName = '{PRODUCTION_TAG}'"
+    )
+    if not production_runs.empty:
+        return production_runs.iloc[0]['metrics.roc']
+    return 0.0
+
 
 def train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune):
     """
@@ -27,6 +41,7 @@ def train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyper
 
     Returns:
     - model: Trained model.
+    - roc: ROC score on the validation set.
     """
     logger.info('Training model...')
     if hyperparameter_tune:
@@ -55,7 +70,8 @@ def train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyper
 
     return model, roc
 
-def modelling_pipeline(hyperparameter_tune: bool = True) -> None:
+
+def modelling_pipeline(hyperparameter_tune: bool = False) -> None:
     """
     Execute the modelling pipeline.
 
@@ -78,27 +94,18 @@ def modelling_pipeline(hyperparameter_tune: bool = True) -> None:
     logger.info('Data loaded')
 
     # Check if a model is in production
-    is_model_in_production = mlflow.search_runs(
-        experiment_ids=[config['mlflow']['experiment_name']],
-        filter_string="tags.mlflow.runName = 'production'"
-    ).shape[0] > 0
+    production_roc = get_production_model_roc()
 
-    if is_model_in_production:
+    if production_roc > 0:
         # Model is in production, evaluate new model on validation set
         logger.info('Model in production. Evaluating new model...')
         new_model, new_roc = train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune)
 
         # Check if new model has better ROC than the model in production
-        production_model_run = mlflow.search_runs(
-            experiment_ids=[config['mlflow']['production_experiment_id']],
-            filter_string="tags.mlflow.runName = 'production'"
-        ).iloc[0]
-        production_roc = production_model_run['metrics.roc']
-
         if new_roc > production_roc:
             # New model has better performance, move it to production
             logger.info('New model has better performance. Pushing to production...')
-            mlflow.set_tag('mlflow.runName', 'production')
+            mlflow.set_tag('mlflow.runName', PRODUCTION_TAG)
             mlflow.lightgbm.log_model(new_model, "model")
         else:
             logger.info('New model does not have better performance than the model in production.')
@@ -110,11 +117,7 @@ def modelling_pipeline(hyperparameter_tune: bool = True) -> None:
 
         # Push the model to production
         logger.info('Pushing the model to production...')
-        mlflow.set_tag('mlflow.runName', 'production')
+        mlflow.set_tag('mlflow.runName', PRODUCTION_TAG)
         mlflow.lightgbm.log_model(new_model, "model")
 
     logger.info('Modelling pipeline finished')
-
-
-
-

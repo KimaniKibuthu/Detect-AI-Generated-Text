@@ -5,10 +5,10 @@ import pickle
 import scipy
 import sentencepiece as spm
 import pandas as pd
-from logs import logger
-from gather_data import load_data
-from utils import load_config
 from sklearn.feature_extraction.text import TfidfVectorizer
+from logs import logger
+from src.data_handling.gather_data import load_data
+from src.utils import load_config
 
 config = load_config()
 
@@ -18,9 +18,8 @@ def train_tokenizer() -> None:
 
     Loads the processed training data and trains a SentencePiece tokenizer model.
     The trained model is saved using the specified model prefix and vocabulary size.
-    
     """
-    train_sentpiece_df = load_data(config['data']['processed_train_data_path'])
+    train_sentpiece_df = load_data(config['data']['preprocessed_train_data_path'])
     with open(config['data']['sentpiece_train_data_path'], 'w', encoding='utf-8') as f:
         for text in train_sentpiece_df['text']:
             f.write(text + '\n')
@@ -28,8 +27,8 @@ def train_tokenizer() -> None:
     # Train SentencePiece model
     spm.SentencePieceTrainer.train(input=config['data']['sentpiece_train_data_path'],
                                    model_prefix=config['models']['sentpiece_model_prefix'],
-                                   vocab_size=config['variables']['vacab_size'])
-    
+                                   vocab_size=config['variables']['vocab_size'])
+
 def train_vectorizer() -> TfidfVectorizer:
     """
     Train TF-IDF vectorizer.
@@ -40,14 +39,12 @@ def train_vectorizer() -> TfidfVectorizer:
     Returns:
     - TfidfVectorizer: Fitted TF-IDF vectorizer.
     """
-    vectorizer = TfidfVectorizer(ngram_range=config['variables']['ngram_range'], 
-                             sublinear_tf=config['variables']['sublinear_tf'],
-                             lowercase=config['variables']['lowercase'],
-                             max_features=config['variables']['max_features'])
-    train_df = load_data(config['data']['processed_train_data_path'])
-    
-    vectorizer.fit_transform(train_df['generated'])
-    
+    vectorizer = TfidfVectorizer(ngram_range=tuple(config['variables']['ngram_range']),
+                                 sublinear_tf=config['variables']['sublinear_tf'],
+                                 lowercase=config['variables']['lowercase'],
+                                 max_features=config['variables']['max_features'])
+    train_df = load_data(config['data']['preprocessed_train_data_path'])
+    vectorizer.fit_transform(train_df['text'])
     return vectorizer
 
 def save_vectorizer(vectorizer: TfidfVectorizer) -> None:
@@ -59,9 +56,8 @@ def save_vectorizer(vectorizer: TfidfVectorizer) -> None:
     """
     with open(config['models']['vectorizer_path'], 'wb') as f:
         pickle.dump(vectorizer, f)
-        
 
-def tokenize_data(data:pd.DataFrame, tok_model_path: str) -> pd.DataFrame:
+def tokenize_data(data: pd.DataFrame, tok_model_path: str) -> pd.DataFrame:
     """
     Tokenize the data using the sentencepiece model.
 
@@ -74,12 +70,11 @@ def tokenize_data(data:pd.DataFrame, tok_model_path: str) -> pd.DataFrame:
     """
     sp = spm.SentencePieceProcessor()
     sp.Load(tok_model_path)
-    data['tokens'] = data['text'].apply(lambda x: sp.EncodeAsPieces(x.lower()))
-    data['text_spm'] = data['tokens'].apply(lambda x: ' '.join(x))
+    data.loc[:, 'tokens'] = data['text'].apply(lambda x: sp.EncodeAsPieces(x.lower()))
+    data.loc[:, 'text_spm'] = data['tokens'].apply(lambda x: ' '.join(x))
     return data
 
-
-def vectorize_data(vectorizer: TfidfVectorizer, text_column:pd.Series) -> scipy.sparse.csr_matrix:
+def vectorize_data(vectorizer: TfidfVectorizer, text_column: pd.Series) -> scipy.sparse.csr_matrix:
     """
     Vectorize text data using a TF-IDF vectorizer.
 
@@ -92,6 +87,8 @@ def vectorize_data(vectorizer: TfidfVectorizer, text_column:pd.Series) -> scipy.
     """
     vectorized_data = vectorizer.transform(text_column)
     return vectorized_data
+
+
     
     
     

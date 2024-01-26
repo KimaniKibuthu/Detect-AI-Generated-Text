@@ -9,6 +9,8 @@ __pycache__/
 mlartifacts/
 mlruns/
 data/
+logs/
+models/
 # Distribution / packaging
 .Python
 build/

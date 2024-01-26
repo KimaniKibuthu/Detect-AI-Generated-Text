@@ -16,7 +16,7 @@ def load_config(config_path: str = "configs/config.yaml") -> dict:
     """
     try:
         with open(config_path, "r") as file:
-            config = yaml.load(file, Loader=yaml.FullLoader)
+            config = yaml.safe_load(file)
         return config
     except Exception as e:
         logger.error(f"Error loading configuration from '{config_path}': {str(e)}")

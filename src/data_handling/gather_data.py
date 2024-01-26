@@ -5,13 +5,13 @@ from logs import logger
 from src.utils import load_config
 from typing import Optional, Union
 from scipy.sparse import csr_matrix
+from scipy.sparse import save_npz, load_npz
 from sklearn.model_selection import train_test_split
 
-# Load configuration
+# Instantiate config
 config = load_config()
-    
 
-def load_data(data_path: str) -> Union[pd.DataFrame, np.ndarray]:
+def load_data(data_path: str) -> Union[pd.DataFrame, np.ndarray, csr_matrix]:
     """
     Load data from a given path.
 
@@ -19,7 +19,7 @@ def load_data(data_path: str) -> Union[pd.DataFrame, np.ndarray]:
     - data_path (str): The path to the data file.
 
     Returns:
-    - Union[pd.DataFrame, np.ndarray]: Loaded data.
+    - Union[pd.DataFrame, np.ndarray, csr_matrix]: Loaded data.
     """
     # Check if the path exists
     if not os.path.exists(data_path):
@@ -34,41 +34,43 @@ def load_data(data_path: str) -> Union[pd.DataFrame, np.ndarray]:
         # Check if the file is a NumPy file
         elif data_path.endswith('.npy'):
             data = np.load(data_path)
+        # Check if the file is a CSR matrix (npz)
+        elif data_path.endswith('.npz'):
+            data = load_npz(data_path)
         else:
-            logger.error(f"Unsupported file format for '{data_path}'. Supported formats: CSV (.csv) or NumPy (.npy)")
-            raise ValueError(f"Unsupported file format for '{data_path}'. Supported formats: CSV (.csv) or NumPy (.npy)")
+            logger.error(f"Unsupported file format for '{data_path}'. "
+                         "Supported formats: CSV (.csv), NumPy (.npy), or CSR matrix (.npz)")
+            raise ValueError(f"Unsupported file format for '{data_path}'. "
+                             "Supported formats: CSV (.csv), NumPy (.npy), or CSR matrix (.npz)")
 
         return data
     except Exception as e:
         logger.error(f"Error loading data from '{data_path}': {str(e)}")
         raise Exception(f"Error loading data from '{data_path}': {str(e)}")
 
-    
 
-def save_data(data: Union[pd.DataFrame, np.ndarray, csr_matrix], data_path: str) -> None:
+def save_data(data: Union[pd.DataFrame, pd.Series, np.ndarray, csr_matrix], data_path: str) -> None:
     """
     Save data to a given path.
 
     Parameters:
-    - data (Union[pd.DataFrame, np.ndarray, csr_matrix]): Data to be saved.
+    - data (Union[pd.DataFrame,  pd.Series, np.ndarray, csr_matrix]): Data to be saved.
     - data_path (str): The path to save the data.
     """
     try:
         # Check data type and save accordingly
         if isinstance(data, pd.DataFrame):
             data.to_csv(data_path, index=False)
-        elif isinstance(data, (np.ndarray, csr_matrix)):
-            np.save(data_path, data)
+        elif isinstance(data, (pd.Series, np.ndarray)):
+            pd.Series(data).to_csv(data_path, index=False, header=False)
         else:
-            logger.error("Unsupported data type")
-            raise ValueError("Unsupported data type. Supported types: pd.DataFrame, np.ndarray, csr_matrix")
+            save_npz(data_path, data)
 
         logger.info(f"Data saved to '{data_path}'.")
     except Exception as e:
         logger.error(f"Error saving data to '{data_path}': {str(e)}")
         raise Exception(f"Error saving data to '{data_path}': {str(e)}")
 
-    
 
 def sample_data(data: pd.DataFrame, n_samples: int, target: Optional[str] = None) -> pd.DataFrame:
     """
@@ -99,4 +101,3 @@ def sample_data(data: pd.DataFrame, n_samples: int, target: Optional[str] = None
     except Exception as e:
         logger.error(f"Error sampling data: {str(e)}")
         raise Exception(f"Error sampling data: {str(e)}")
-

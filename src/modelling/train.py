@@ -1,10 +1,10 @@
 """
 This module contains code to train the model
 """
-import mlflow
+
 from typing import Optional, Union, Any, Dict
 from sklearn.base import BaseEstimator
-from lightgbm import LGBMClassifier
+import lightgbm as lgb
 import xgboost as xgb
 import pandas as pd
 import numpy as np
@@ -14,6 +14,7 @@ from logs import logger
 
 def train_model(X_train: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]] = None,
                 y_train: Optional[np.ndarray] = None,
+                model: Optional[Union[lgb.Booster, xgb.Booster]] = None,
                 params: Dict[str, Any] = {}) -> BaseEstimator:
     """
     Train the model.
@@ -28,7 +29,7 @@ def train_model(X_train: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]] =
     """
     
     logger.info("Model training started.")
-    model = LGBMClassifier(**params)
+    model.set_params(**params)
     try:    
         logger.info("Training model")
         model.fit(X_train, y_train)
