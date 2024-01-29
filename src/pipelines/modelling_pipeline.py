@@ -8,7 +8,7 @@ from src.modelling.train import train_model
 from logs import logger
 import mlflow
 from mlflow.tracking import MlflowClient
-from src.utils import load_config
+from src.utils import load_config, save_config
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 
@@ -42,7 +42,10 @@ def push_models_to_production(client):
     result = mlflow.register_model(f"runs:/{best_run_id}/model",
                                    MODEL_NAME,
                                    tags={METRIC_TO_USE: best_run_metric_value})
-
+    
+    config['models']['model_uri'] = f"runs:/{best_run_id}/model"
+    
+    save_config(config)
     # Check for the best roc-recall results and push that model to production
     model_version_details = client.get_latest_versions(MODEL_NAME, stages=["Production"])
     

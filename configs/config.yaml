@@ -29,6 +29,7 @@ models:
   vectorizer_path: models/vectorizer.pkl
   hyperparameters_path: models/hyperparameters.json
   model_to_use: lgbm
+  model_uri: runs:/c0af9cfd85d645179f942885b26d3bd6/model
 
 data_pipeline:
   fit_tokenizer: False
