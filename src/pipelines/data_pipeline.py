@@ -3,7 +3,7 @@ from typing import Tuple
 from src.data_handling.gather_data import load_data, save_data
 from src.data_handling.preprocess import remove_duplicates
 from src.data_handling.splitting import split_data
-from src.data_handling.validation import validate_schema, DataSchema
+from src.data_handling.validation import validate_schema
 from src.data_handling.build_features import train_tokenizer, train_vectorizer, save_vectorizer, tokenize_data, vectorize_data
 from logs import logger
 from src.utils import load_config

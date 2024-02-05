@@ -12,17 +12,16 @@ import numpy as np
 config = load_config()
 
 def split_data(data: Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]],
-               test_size: float) -> Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]:
+               test_size: float) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Split data into train and test sets.
 
     Parameters:
-    - X_data (Union[pd.DataFrame, np.ndarray, csr_matrix]): Input features.
-    - y_data (Optional[np.ndarray]): Target variable.
+    - data (Optional[Union[pd.DataFrame, np.ndarray, csr_matrix]]): Input data.
     - test_size (float): Size of the test set.
 
     Returns:
-    - Tuple[pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray]: Tuple containing X_train, X_test, y_train, y_test.
+    - Tuple[pd.DataFrame, pd.DataFrame]: Tuple containing train and test sets.
     """
     # Split data
     train, test= train_test_split(data,

@@ -1,6 +1,5 @@
 import mlflow
 import pickle
-import sentencepiece as spm
 import pandas as pd
 from logs import logger
 from src.utils import load_config

@@ -6,7 +6,6 @@ import scipy
 import sentencepiece as spm
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from logs import logger
 from src.data_handling.gather_data import load_data
 from src.utils import load_config
 

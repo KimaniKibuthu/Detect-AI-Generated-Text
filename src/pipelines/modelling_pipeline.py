@@ -11,6 +11,8 @@ from mlflow.tracking import MlflowClient
 from src.utils import load_config, save_config
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
+from sklearn.metrics import roc_auc_score
+import json
 
 # Constants
 EXPERIMENT_NAME_KEY = 'mlflow'

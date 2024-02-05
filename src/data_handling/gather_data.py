@@ -6,7 +6,7 @@ from src.utils import load_config
 from typing import Optional, Union
 from scipy.sparse import csr_matrix
 from scipy.sparse import save_npz, load_npz
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split  
 
 # Instantiate config
 config = load_config()

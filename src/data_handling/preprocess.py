@@ -7,7 +7,7 @@ from src.utils import load_config
 
 config = load_config()
 
-def remove_duplicates(data: pd.DataFrame, save_path: str) -> pd.DataFrame:
+def remove_duplicates(data: pd.DataFrame) -> pd.DataFrame:
     """
     Remove duplicates from the data.
 
