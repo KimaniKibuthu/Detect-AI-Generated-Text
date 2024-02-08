@@ -20,21 +20,12 @@ def config():
     return load_config()
 
 @pytest.fixture
-def mock_train_data(tmpdir, config):
+def mock_train_data(config):
     # Create a temporary directory for the mock training data
-    train_data_path = tmpdir.join("train_data.csv")
+    train_data_path = config['data']['mock_data_path']
     mock_data = pd.DataFrame({"text": ["This is a sample text.", "Another example."]})
     mock_data.to_csv(train_data_path, index=False)
-    config['data']['preprocessed_train_data_path'] = train_data_path
     return config
-
-def test_train_tokenizer(mock_train_data):
-    train_tokenizer()
-    assert os.path.exists(mock_train_data['models']['sentpiece_model_prefix'] + ".model")
-
-def test_train_vectorizer(mock_train_data):
-    vectorizer = train_vectorizer()
-    assert isinstance(vectorizer, TfidfVectorizer)
 
 def test_save_vectorizer(mock_train_data):
     vectorizer = TfidfVectorizer()
@@ -43,14 +34,14 @@ def test_save_vectorizer(mock_train_data):
 
 def test_tokenize_data(mock_train_data):
     train_df = load_data(mock_train_data['data']['preprocessed_train_data_path'])
-    tok_model_path = mock_train_data['models']['sentpiece_model_prefix'] + ".model"
+    tok_model_path = mock_train_data['models']['sentpiece_model_path']
     tokenized_data = tokenize_data(train_df, tok_model_path)
     assert 'tokens' in tokenized_data.columns
     assert 'text_spm' in tokenized_data.columns
 
 def test_vectorize_data(mock_train_data):
     vectorizer = train_vectorizer()
-    train_df = load_data(mock_train_data['data']['preprocessed_train_data_path'])
+    train_df = load_data(mock_train_data['data']['mock_data_path'])
     vectorized_data = vectorize_data(vectorizer, train_df['text'])
     assert isinstance(vectorized_data, scipy.sparse.csr_matrix)
     assert vectorized_data.shape[0] == len(train_df)

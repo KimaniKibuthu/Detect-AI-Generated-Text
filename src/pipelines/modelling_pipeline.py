@@ -133,21 +133,18 @@ def train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyper
     if hyperparameter_tune:
         best_params = hyperparameter_tuning(X_train, y_train)
         model = train_model(X_train, y_train, model, best_params)
-
     else:
         best_params = load_hyperparameters()
         model = train_model(X_train, y_train, model, best_params)
+    logger.info('Model trained')
 
     with mlflow.start_run():
-        model = train_model(X_train, y_train, model, best_params)
-
-        logger.info('Model trained')
-
         evaluate_and_log_metrics(model, X_validation, y_validation)
-
         log_model(model, model_to_use)
+        roc = roc_auc_score(y_validation, model.predict_proba(X_validation)[:, 1])
 
-    return model, roc_auc_score(y_validation, model.predict_proba(X_validation)[:, 1])
+    return model, roc
+
 
 
 def hyperparameter_tuning(X_train, y_train):
@@ -247,17 +244,16 @@ def modelling_pipeline(client, hyperparameter_tune: bool = False) -> None:
     y_validation = load_data(config['data']['modelling_y_validation_data_path'])
     logger.info('Data loaded')
     
-    # If hyperparameter tune, hyperparameterize the model
-    if hyperparameter_tune:
-        logger.info('Hyperparameter tuning...')
-        model, _ = train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune)
-        push_models_to_production(client)
-        logger.info('Hyperparameter tuning completed')
-    else:
-        logger.info('Training model...')
-        model, _ = train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune)
-        push_models_to_production(client)
-        logger.info('Model trained')
+
+    logger.info('Model Pipeline started...')
+    model, _ = train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune)
+    push_models_to_production(client)
+    logger.info('Model Pipeline completed')
+    # else:
+    #     logger.info('Training model...')
+    #     model, _ = train_and_evaluate_model(X_train, y_train, X_validation, y_validation, hyperparameter_tune)
+    #     push_models_to_production(client)
+    #     logger.info('Model trained')
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ def get_inference(data: str) -> tuple:
     # Load the vectorizer from pkl file
     vectorizer_path = config['models']['vectorizer_path']
     sentpiece_path = config['models']['sentpiece_model_path']
-    
+    print(vectorizer_path)
     with open(vectorizer_path, 'rb') as f:
         vectorizer = pickle.load(f)
     

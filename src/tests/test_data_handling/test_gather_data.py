@@ -1,20 +1,23 @@
 import os
+import pytest
 import pandas as pd
 import numpy as np
-from scipy.sparse import csr_matrix, save_npz
-import pytest
+from scipy.sparse import csr_matrix, save_npz, load_npz
 from sklearn.model_selection import train_test_split
+from logs import logger  
 from src.utils import load_config
 from src.data_handling.gather_data import load_data, save_data, sample_data
 
-
+# Define the path to the data folder
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+os.makedirs(DATA_DIR, exist_ok=True)
 # Define a fixture for temporary data
 @pytest.fixture
 def temp_data(tmpdir):
-    temp_dir = tmpdir.mkdir("temp_data")
-    csv_path = temp_dir.join("temp_data.csv")
-    npy_path = temp_dir.join("temp_data.npy")
-    npz_path = temp_dir.join("temp_data.npz")
+    temp_dir = str(tmpdir.mkdir("temp_data"))  # Convert temp_dir to string
+    csv_path = os.path.join(temp_dir, "temp_data.csv")
+    npy_path = os.path.join(temp_dir, "temp_data.npy")
+    npz_path = os.path.join(temp_dir, "temp_data.npz")
 
     # Create sample data
     sample_df = pd.DataFrame({'col1': [1, 2, 3], 'col2': ['a', 'b', 'c']})
@@ -41,28 +44,29 @@ def test_load_data(temp_data):
     npz_data = load_data(temp_data['npz'])
     assert isinstance(npz_data, csr_matrix)
 
-def test_save_data(temp_data, tmpdir):
+def test_save_data(temp_data):
+    
     # Test saving CSV data
     csv_data = pd.DataFrame({'col1': [1, 2, 3], 'col2': ['a', 'b', 'c']})
-    csv_path = tmpdir.join("saved_data.csv")
-    save_data(csv_data, str(csv_path))
-    assert os.path.exists(str(csv_path))
+    csv_path = os.path.join(DATA_DIR, "saved_data.csv")
+    save_data(csv_data, csv_path)
+    assert os.path.exists(csv_path)
 
     # Test saving NumPy data
     npy_data = np.array([1, 2, 3])
-    npy_path = tmpdir.join("saved_data.npy")
-    save_data(npy_data, str(npy_path))
-    assert os.path.exists(str(npy_path))
+    npy_path = os.path.join(DATA_DIR, "saved_data.npy")
+    save_data(npy_data, npy_path)
+    assert os.path.exists(npy_path)
 
     # Test saving CSR matrix data
     npz_data = csr_matrix([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
-    npz_path = tmpdir.join("saved_data.npz")
-    save_data(npz_data, str(npz_path))
-    assert os.path.exists(str(npz_path))
+    npz_path = os.path.join(DATA_DIR, "saved_data.npz")
+    save_data(npz_data, npz_path)
+    assert os.path.exists(npz_path)
 
 def test_sample_data():
     # Mock data
-    data = pd.DataFrame({'col1': [1, 2, 3], 'col2': ['a', 'b', 'c'], 'target': [0, 1, 0]})
+    data = pd.DataFrame({'col1': [1, 2, 3, 4, 5], 'col2': ['a', 'b', 'c', 'd', 'e'], 'target': [0, 1, 0, 0, 1]})
 
     # Test stratified sampling
     sampled_data_stratified = sample_data(data, n_samples=2, target='target')

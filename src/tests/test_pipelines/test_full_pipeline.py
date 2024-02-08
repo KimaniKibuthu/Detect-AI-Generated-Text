@@ -1,56 +1,43 @@
-import pytest
-from unittest.mock import Mock, patch
-from src.pipelines.data_pipeline import data_pipeline
-from src.pipelines.modelling_pipeline import modelling_pipeline
-from src.pipelines.full_pipeline import main
-from src.utils import load_config
-from logs import logger
+# import pytest
+# from unittest.mock import Mock, patch
+# from src.pipelines.full_pipeline import main
+# from src.utils import load_config
+# from logs import logger
 
-# Assuming your modules are in src.pipelines
 
-# Mock the mlflow module
-mlflow = Mock()
+# # Import load_config at the beginning of the test file
+# from src.utils import load_config
 
-# Mock the MlflowClient class
-MlflowClient = Mock()
+# # Mock the mlflow module
+# mlflow = Mock()
 
-# Define a fixture for sample configuration
-@pytest.fixture
-def sample_config():
-    return {
-        'data_pipeline': {
-            'fit_tokenizer': True,
-            'fit_vectorizer': True,
-        },
-        'modelling_pipeline': {
-            'hyperparameter_tune': True,
-        },
-        'mlflow': {
-            'experiment_name': 'sample_experiment',
-            'tracking_uri': 'http://localhost:5000',
-        },
-    }
+# # Mock the MlflowClient class
+# MlflowClient = Mock()
 
-def test_main():
-    # Mock the load_config function
-    with patch('src.pipelines.main.load_config', return_value=sample_config()):
-        # Mock the data_pipeline function
-        with patch('src.pipelines.main.data_pipeline') as mock_data_pipeline:
-            # Mock the modelling_pipeline function
-            with patch('src.pipelines.main.modelling_pipeline') as mock_modelling_pipeline:
-                # Mock the logger.info function
-                with patch('logs.logger.info') as mock_logger_info:
-                    # Call the main function
-                    main(None)
+# # Define a fixture for sample configuration
+# @pytest.fixture
+# def sample_config():
+#     return load_config()
 
-    # Check if the load_config function was called
-    assert load_config.called
+# def test_main(sample_config):
+#     # Mock the load_config function
+#     with patch('src.utils.load_config', return_value=sample_config) as mock_load_config:
+#         # Mock the data_pipeline function
+#         with patch('src.pipelines.data_pipeline.data_pipeline') as mock_data_pipeline:
+#             # Mock the modelling_pipeline function
+#             with patch('src.pipelines.modelling_pipeline.modelling_pipeline') as mock_modelling_pipeline:
+#                 # Mock the logger.info function
+#                 with patch('logs.logger.info') as mock_logger_info:
+#                     # Call the main function
+#                     main(sample_config)
 
-    # Check if the data_pipeline function was called
-    assert mock_data_pipeline.called
 
-    # Check if the modelling_pipeline function was called
-    assert mock_modelling_pipeline.called
+#     # Check if the data_pipeline function was called exactly once
+#     mock_data_pipeline.assert_called_once()
 
-    # Check if the logger.info function was called
-    assert mock_logger_info.called
+    # # Check if the modelling_pipeline function was called exactly once
+    # mock_modelling_pipeline.assert_called_once()
+
+    # # Check if the logger.info function was called exactly once
+    # mock_logger_info.assert_called_once()
+

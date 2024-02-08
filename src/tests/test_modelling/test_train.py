@@ -12,25 +12,11 @@ def sample_data():
     y_train = np.array([0, 1, 0, 1, 0])
     return X_train, y_train
 
-def test_train_model(sample_data):
+@pytest.mark.parametrize("model", [LGBMClassifier(), XGBClassifier()])
+def test_train_model(sample_data, model):
     X_train, y_train = sample_data
-
-    # Test training model with LGBMClassifier
-    lgbm_model = LGBMClassifier()
-    trained_lgbm_model = train_model(X_train, y_train, lgbm_model)
-
-    # Check if the result is a trained LGBM model
-    assert isinstance(trained_lgbm_model, LGBMClassifier)
-
-    # Test training model with XGBClassifier
-    xgb_model = XGBClassifier()
-    trained_xgb_model = train_model(X_train, y_train, xgb_model)
-
-    # Check if the result is a trained XGB model
-    assert isinstance(trained_xgb_model, XGBClassifier)
 
     # Test training model with invalid parameters
     invalid_params = {'invalid_param': 'invalid_value'}
     with pytest.raises(Exception):
-        train_model(X_train, y_train, lgbm_model, params=invalid_params)
-        train_model(X_train, y_train, xgb_model, params=invalid_params)
+        train_model(X_train, y_train, model, params=invalid_params)

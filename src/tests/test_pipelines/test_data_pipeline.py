@@ -1,36 +1,17 @@
 import pytest
 import pandas as pd
+import numpy as np
+from scipy.sparse import csr_matrix
 from src.pipelines.data_pipeline import data_pipeline
 from src.utils import load_config
 
-# Assuming your module is named 'src.data_processing.data_pipeline'
+
 
 # Define a fixture for sample configuration
 @pytest.fixture
 def sample_config():
-    return {
-        'data': {
-            'preprocessed_train_data_path': 'path/to/preprocessed_train_data.csv',
-            'preprocessed_test_data_path': 'path/to/preprocessed_test_data.csv',
-            'modelling_X_train_data_path': 'path/to/X_train_data.csv',
-            'modelling_X_test_data_path': 'path/to/X_test_data.csv',
-            'modelling_X_validation_data_path': 'path/to/X_validation_data.csv',
-            'modelling_y_train_data_path': 'path/to/y_train_data.csv',
-            'modelling_y_test_data_path': 'path/to/y_test_data.csv',
-            'modelling_y_validation_data_path': 'path/to/y_validation_data.csv',
-        },
-        'models': {
-            'sentpiece_model_path': 'path/to/sentpiece_model.pkl',
-            'vectorizer_path': 'path/to/vectorizer.pkl',
-        },
-        'variables': {
-            'test_size': 0.2,
-        },
-        'data_pipeline': {
-            'fit_tokenizer': True,
-            'fit_vectorizer': True,
-        }
-    }
+    return load_config()
+
 
 def test_data_pipeline(sample_config):
     # Test data pipeline with sample configuration
@@ -42,4 +23,4 @@ def test_data_pipeline(sample_config):
 
     # Check if the tuple contains the expected elements
     assert len(result) == 6
-    assert all(isinstance(element, pd.DataFrame) or isinstance(element, pd.Series) for element in result)
+    assert all(isinstance(element, (pd.DataFrame, pd.Series, np.ndarray, csr_matrix)) for element in result)

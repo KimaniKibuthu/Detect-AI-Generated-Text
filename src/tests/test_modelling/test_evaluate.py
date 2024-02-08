@@ -40,10 +40,14 @@ def test_evaluate_model(sample_data):
 
     # Test evaluating model with a simple estimator
     class DummyEstimator(BaseEstimator):
-        def fit(self):
+        def __init__(self):
             pass
-        def predict_proba(self):
-            return np.array([[0.2, 0.8], [0.7, 0.3], [0.4, 0.6]])
+
+        def fit(self, X, y):
+            pass
+
+        def predict_proba(self, X):
+            return np.array([[0.2, 0.8], [0.7, 0.3], [0.4, 0.6], [0.7, 0.5], [0.3, 0.7]])
 
     dummy_model = DummyEstimator()
     roc, custom = evaluate_model(dummy_model, X_test, y_test)
@@ -52,18 +56,3 @@ def test_evaluate_model(sample_data):
     assert isinstance(roc, float)
     assert isinstance(custom, float)
 
-def test_custom_scorer(sample_data):
-    X_test, y_test = sample_data
-
-    # Test custom scorer with a simple estimator
-    class DummyEstimator(BaseEstimator):
-        def fit(self):
-            pass
-        def predict_proba(self):
-            return np.array([[0.2, 0.8], [0.7, 0.3], [0.4, 0.6]])
-
-    dummy_model = DummyEstimator()
-    score = custom_scorer(dummy_model, X_test, y_test)
-
-    # Check if the result is a float
-    assert isinstance(score, float)

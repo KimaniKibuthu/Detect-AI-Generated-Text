@@ -31,8 +31,8 @@ def data_pipeline(fit_tokenizer: bool = False, fit_vectorizer: bool = True) -> T
         logger.info('Data loaded')
         # Preprocess data
         logger.info('Data preprocessing...')
-        processed_train_data = remove_duplicates(raw_train_data, config['data']['preprocessed_train_data_path'])
-        processed_test_data = remove_duplicates(raw_test_data, config['data']['preprocessed_test_data_path'])
+        processed_train_data = remove_duplicates(raw_train_data)
+        processed_test_data = remove_duplicates(raw_test_data)
         logger.info('Data preprocessed successfully')
         # Validate data
         logger.info('Validating data...')
