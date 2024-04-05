@@ -6,14 +6,14 @@ data:
   modelling_y_test_data_path: data/modelling/y_test.npy
   modelling_y_train_data_path: data/modelling/y_train.npy
   modelling_y_validation_data_path: data/modelling/y_validation.npy
-  preprocessed_test_data_path: data/interim/exp_eval.csv
-  preprocessed_train_data_path: data/interim/exp_train.csv
+  preprocessed_test_data_path: data/interim/full_eval.csv
+  preprocessed_train_data_path: data/interim/full_train.csv
   processed_test_data_path: data/processed/test.csv
   processed_train_data_path: data/processed/train.csv
   sentpiece_train_data_path: data/interim/sentpiece_train.txt
 data_pipeline:
-  fit_tokenizer: false
-  fit_vectorizer: true
+  fit_tokenizer: True
+  fit_vectorizer: True
 hyperparameter_tuning_lgbm:
   colsample_bynode:
   - 0.7
@@ -48,7 +48,7 @@ mlflow:
   experiment_name: detect-ai-text
   tracking_uri: http://localhost:5000
 modelling_pipeline:
-  hyperparameter_tune: false
+  hyperparameter_tune: False
 models:
   hyperparameters_path: models/hyperparameters.json
   model_to_use: lgbm
@@ -57,13 +57,13 @@ models:
   sentpiece_model_prefix: models/sentpiece_model
   vectorizer_path: models/vectorizer.pkl
 variables:
-  lowercase: false
+  lowercase: False
   max_features: 5000
   n_trials: 20
   ngram_range:
   - 3
   - 5
   random_state: 42
-  sublinear_tf: true
+  sublinear_tf: True
   test_size: 0.5
   vocab_size: 30522
