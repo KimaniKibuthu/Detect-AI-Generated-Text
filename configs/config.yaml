@@ -1,74 +1,69 @@
-variables:
-  random_state: 42
-  test_size: 0.5
-  vocab_size: 30522
-  ngram_range:
-    - 3
-    - 5
-  sublinear_tf: True
-  lowercase: False
-  max_features: 5000
-  n_trials: 20
-
 data:
-  preprocessed_train_data_path: data/interim/exp_train.csv
-  preprocessed_test_data_path: data/interim/exp_eval.csv
-  processed_train_data_path: data/processed/train.csv
-  processed_test_data_path: data/processed/test.csv
-  sentpiece_train_data_path: data/interim/sentpiece_train.txt
-  modelling_X_train_data_path: data/modelling/X_train.npz
+  mock_data_path: data/tests_data/mock_data.csv
   modelling_X_test_data_path: data/modelling/X_test.npz
+  modelling_X_train_data_path: data/modelling/X_train.npz
   modelling_X_validation_data_path: data/modelling/X_validation.npz
-  modelling_y_train_data_path: data/modelling/y_train.npy
   modelling_y_test_data_path: data/modelling/y_test.npy
+  modelling_y_train_data_path: data/modelling/y_train.npy
   modelling_y_validation_data_path: data/modelling/y_validation.npy
-
+  preprocessed_test_data_path: data/interim/exp_eval.csv
+  preprocessed_train_data_path: data/interim/exp_train.csv
+  processed_test_data_path: data/processed/test.csv
+  processed_train_data_path: data/processed/train.csv
+  sentpiece_train_data_path: data/interim/sentpiece_train.txt
+data_pipeline:
+  fit_tokenizer: true
+  fit_vectorizer: true
+hyperparameter_tuning_lgbm:
+  colsample_bynode:
+  - 0.7
+  - 1.0
+  colsample_bytree:
+  - 0.7
+  - 1.0
+  lambda_l1:
+  - 0.1
+  - 10
+  lambda_l2:
+  - 0.1
+  - 10
+  learning_rate:
+  - 0.01
+  - 0.1
+  max_bin:
+  - 100
+  - 1000
+  max_depth:
+  - 3
+  - 30
+  metric: custom
+  min_data_in_leaf:
+  - 50
+  - 150
+  n_iter: 2500
+  objective: cross_entropy
+  verbose: -1
+mlflow:
+  artifact_location: artifacts
+  experiment_name: detect-ai-text
+  tracking_uri: http://localhost:5000
+modelling_pipeline:
+  hyperparameter_tune: false
 models:
-  sentpiece_model_prefix: models/sentpiece_model
-  sentpiece_model_path: models/sentpiece_model.model
-  vectorizer_path: models/vectorizer.pkl
   hyperparameters_path: models/hyperparameters.json
   model_to_use: lgbm
-  model_uri: runs:/c0af9cfd85d645179f942885b26d3bd6/model
-
-data_pipeline:
-  fit_tokenizer: False
-  fit_vectorizer: True
-  
-modelling_pipeline:
-  hyperparameter_tune: False
-
-mlflow:
-  experiment_name: "detect-ai-text"
-  tracking_uri: "http://localhost:5000"
-  artifact_location: "artifacts"
-
-hyperparameter_tuning_lgbm:
-  objective: cross_entropy
-  metric: custom
-  n_iter: 2500
-  verbose: -1
-  min_data_in_leaf:
-    - 50
-    - 150
-  max_depth: 
-    - 3
-    - 30
-  max_bin:
-    - 100
-    - 1000
-  learning_rate: 
-    - 0.01
-    - 0.1
-  colsample_bytree:
-    - 0.7
-    - 1.0
-  colsample_bynode:
-    - 0.7
-    - 1.0
-  lambda_l1:
-    - 0.1
-    - 10
-  lambda_l2:
-    - 0.1
-    - 10
+  model_uri: runs:/83a0edcb635045acbed63930049cbf88/model
+  sentpiece_model_path: models/sentpiece_model.model
+  sentpiece_model_prefix: models/sentpiece_model
+  vectorizer_path: models/vectorizer.pkl
+variables:
+  lowercase: false
+  max_features: 5000
+  n_trials: 20
+  ngram_range:
+  - 3
+  - 5
+  random_state: 42
+  sublinear_tf: true
+  test_size: 0.5
+  vocab_size: 15000
